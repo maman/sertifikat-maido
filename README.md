@@ -1,6 +1,6 @@
 # Generator Maido bersertifikasi
 
-[Shot](http://i.imgur.com/df4nYmC.png)
+![Shot](http://i.imgur.com/df4nYmC.png)
 
 ## Apa itu maido?
 
