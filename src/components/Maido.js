@@ -16,24 +16,46 @@ export default class Maido extends Component {
     }
   }
 
+  /**
+   * Run after component has mounted,
+   * and DOM are ready
+   */
   componentDidMount () {
-    this._renderToCanvas(this._getCanvas(), this.state.text)
+    this._renderToCanvas(this.getCanvas(), this.state.text)
   }
 
+  /**
+   * Run before the render cycle
+   * @param  {Object} nextState next state to render
+   */
   componentWillUpdate (nextState) {
-    this._renderToCanvas(this._getCanvas(), nextState.text)
+    this._renderToCanvas(this.getCanvas(), nextState.text)
   }
 
+  /**
+   * Load image from source
+   * @param  {String} src image source, in base64
+   * @return {DOMInstance}
+   */
   _loadImage (src) {
     let image = new Image()
     image.src = src
     return image
   }
 
-  _getCanvas () {
+  /**
+   * Get canvas DOM instance
+   * @return {DOMInstance}
+   */
+  getCanvas () {
     return this.refs.canvas
   }
 
+  /**
+   * Render text and image to canvas
+   * @param  {DomInstance} canvas Canvas DOM Instance
+   * @param  {String}      text   Text to write on canvas
+   */
   _renderToCanvas (canvas, text) {
     let ctx = canvas.getContext('2d')
     ctx.clearRect(0, 0, canvas.width, canvas.height)
@@ -43,11 +65,15 @@ export default class Maido extends Component {
     ctx.fillText(text, (canvas.width / 2), 200)
   }
 
+  /**
+   * Render the component
+   * @return {ReactInstance}
+   */
   render () {
     return (
       <canvas ref='canvas'
-        width={ 600 }
-        height={ 428 } />
+        width={ this.state.image.width }
+        height={ this.state.image.height } />
     )
   }
 }

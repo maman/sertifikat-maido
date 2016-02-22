@@ -10,7 +10,6 @@ export class Home extends Component {
     super(props)
     this.props.params.name = this.props.params.name || 'Ray Moe'
     this._downloadFromCanvas = this._downloadFromCanvas.bind(this)
-    this._handleChange = this._handleChange.bind(this)
   }
 
   static get propTypes () {
@@ -19,11 +18,24 @@ export class Home extends Component {
     }
   }
 
+  /**
+   * Get image from canvas
+   * ---------------------------------------------------
+   * this function requires the parent to call a method
+   * inside the client. not the ideal solution.
+   * ---------------------------------------------------
+   * @param  {Function} fn callback function
+   * @return {Function}
+   */
   _getImageFromCanvas (fn) {
-    let canvas = this.refs.maido.refs.canvas
+    /** TODO: cari cara yang lebi baik */
+    let canvas = this.refs.maido.getCanvas()
     return canvas.toBlob(fn)
   }
 
+  /**
+   * Download image from canvas
+   */
   _downloadFromCanvas () {
     let filename = `${ slugify(this.props.params.name).toLowerCase() }-${ randomstring.generate({ length: 8 }) }.png`
     this._getImageFromCanvas(blob => {
@@ -31,10 +43,10 @@ export class Home extends Component {
     })
   }
 
-  _handleChange () {
-    browserHistory.replace(`/${ this.refs.text.value }`)
-  }
-
+  /**
+   * Render the component
+   * @return {ReactInstance}
+   */
   render () {
     return (
       <div>
@@ -43,7 +55,7 @@ export class Home extends Component {
           ref='maido'/>
         <input type='text'
           placeholder='Input text'
-          onChange={ () => { this._handleChange() } }
+          onChange={ () => { browserHistory.replace(`/${ this.refs.text.value }`) } }
           ref='text'
           value={ this.props.params.name } />
         <button
