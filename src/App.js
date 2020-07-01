@@ -1,21 +1,51 @@
-import React, { Component, PropTypes } from 'react'
-import { browserHistory } from 'react-router'
+import React, { Component } from 'react'
 import randomstring from 'randomstring'
 import saveAs from 'browser-saveas'
+import PropTypes from 'prop-types';
 import slugify from 'slugify'
 import Maido from './components/Maido'
 
-export class Home extends Component {
-  constructor (props) {
-    super(props)
-    this.props.params.name = this.props.params.name || 'Ray Moe'
-    this._downloadFromCanvas = this._downloadFromCanvas.bind(this)
+export default class App extends Component {
+  static propTypes = {
+    history: PropTypes.any,
+    location: PropTypes.any,
   }
 
-  static get propTypes () {
-    return {
-      params: PropTypes.object.isRequired
+  constructor (props) {
+    super(props)
+    this._downloadFromCanvas = this._downloadFromCanvas.bind(this)
+    this.handleInput = this.handleInput.bind(this);
+    this.state = {
+      name: '',
     }
+  }
+
+  componentDidMount() {
+    const name = this.props.location.pathname.replace('/', '');
+    this.setState({
+      name,
+    });
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.location.pathname !== this.props.location.pathname) {
+      this.setState({
+        name: this.props.location.pathname.replace('/', '')
+      })
+    }
+    if (prevState.name !== this.state.name) {
+      this.setState({
+        name: this.state.name,
+      })
+    }
+  }
+
+  handleInput(e) {
+    this.setState({
+      name: e.target.value,
+    })
+    if (!e.target.value.length) this.props.history.push('/');
+    else this.props.history.push(e.target.value);
   }
 
   /**
@@ -37,7 +67,7 @@ export class Home extends Component {
    * Download image from canvas
    */
   _downloadFromCanvas () {
-    let filename = `${ slugify(this.props.params.name).toLowerCase() }-${ randomstring.generate({ length: 8 }) }.png`
+    let filename = `${ slugify(this.state.name).toLowerCase() }-${ randomstring.generate({ length: 8 }) }.png`
     this._getImageFromCanvas(blob => {
       saveAs(blob, filename)
     })
@@ -51,13 +81,12 @@ export class Home extends Component {
     return (
       <div>
         <h1>Sertifikat Lomba Maido tingkat Nasional</h1>
-        <Maido text={ this.props.params.name || '' }
+        <Maido text={ this.state.name || '' }
           ref='maido'/>
         <input type='text'
           placeholder='Input text'
-          onChange={ () => { browserHistory.replace(`/${ this.refs.text.value }`) } }
-          ref='text'
-          value={ this.props.params.name } />
+          onChange={this.handleInput}
+          value={ this.state.name } />
         <button
           ref='download'
           onClick={ () => { this._downloadFromCanvas() } }>Download</button>
